@@ -7,11 +7,12 @@ import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.GridLayoutManager
 import kotlinx.android.synthetic.main.activity_main.*
 import ru.melandra.basickotlin.R
+import ru.melandra.basickotlin.UI.note.NoteActivity
 
 class MainActivity : AppCompatActivity() {
 
     lateinit var viewModel: MainViewModel
-    val adapter: NotesRecyclerViewAdapter = NotesRecyclerViewAdapter()
+    val adapter: NotesRecyclerViewAdapter = NotesRecyclerViewAdapter {NoteActivity.start(this, it)}
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -27,5 +28,7 @@ class MainActivity : AppCompatActivity() {
                 adapter.notes = state.notes
             }
         })
+
+        fab.setOnClickListener { NoteActivity.start(this) }
     }
 }
