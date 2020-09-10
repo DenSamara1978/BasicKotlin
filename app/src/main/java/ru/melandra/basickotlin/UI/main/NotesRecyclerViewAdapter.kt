@@ -8,7 +8,7 @@ import kotlinx.android.synthetic.main.note_item.view.*
 import ru.melandra.basickotlin.Data.Note
 import ru.melandra.basickotlin.R
 
-class NotesRecyclerViewAdapter: RecyclerView.Adapter<NotesRecyclerViewAdapter.ViewHolder>() {
+class NotesRecyclerViewAdapter(val onItemClick:((Note) -> Unit)? = null): RecyclerView.Adapter<NotesRecyclerViewAdapter.ViewHolder>() {
 
     var notes: List<Note> = listOf()
         set(value) {
@@ -24,13 +24,16 @@ class NotesRecyclerViewAdapter: RecyclerView.Adapter<NotesRecyclerViewAdapter.Vi
 
     override fun getItemCount() = notes.size
 
-    class ViewHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
+    inner class ViewHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
 
-        fun bind(note: Note) = with(itemView) {
-            with(note) {
-                tv_title.text = title
-                tv_text.text = text
-                setBackgroundColor(color)
+        fun bind(note: Note) {
+            with(itemView) {
+                with(note) {
+                    tv_title.text = title
+                    tv_text.text = text
+                    setBackgroundColor(getColor())
+                }
+                setOnClickListener { onItemClick?.invoke(note) }
             }
         }
     }

@@ -7,27 +7,38 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <LinearLayout
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fab"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="16dp"
+        android:src="@drawable/ic_add_btn"
+        app:fabSize="normal"
+        app:layout_anchor="@id/rv_notes"
+        app:layout_anchorGravity="bottom|end" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rv_notes"
+        android:layout_width="match_parent"
+        android:layout_height="676dp"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+    </androidx.recyclerview.widget.RecyclerView>
+
+    <com.google.android.material.appbar.AppBarLayout
         android:layout_height="wrap_content"
         android:layout_width="match_parent"
-        android:id="@+id/appbar"
-        android:orientation="vertical">
+        android:id="@+id/appbar_main">
 
         <androidx.appcompat.widget.Toolbar
-            android:id="@+id/toolbar"
-            android:layout_width="match_parent"
+            app:title="Notes App"
             android:layout_height="wrap_content"
-            app:layout_scrollFlags="scroll|enterAlways"
-            app:title="Notes App" />
-
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/rv_notes"
             android:layout_width="match_parent"
-            android:layout_height="676dp"
-            app:layout_behavior="@string/appbar_scrolling_view_behavior">
+            android:id="@+id/toolbar_main"
+            android:theme="@style/Theme.AppCompat.Light.DarkActionBar"
+            app:layout_scrollFlags="scroll|enterAlways"/>
 
-        </androidx.recyclerview.widget.RecyclerView>
-
-    </LinearLayout>
+    </com.google.android.material.appbar.AppBarLayout>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
