@@ -6,48 +6,61 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.view.MenuItem
 import androidx.lifecycle.ViewModelProviders
 import kotlinx.android.synthetic.main.activity_note.*
 import ru.melandra.basickotlin.Data.Note
 import ru.melandra.basickotlin.Data.NotesRepository.saveNote
 import ru.melandra.basickotlin.R
+import ru.melandra.basickotlin.UI.base.BaseActivity
 import java.text.SimpleDateFormat
 import java.util.*
 import ru.melandra.basickotlin.UI.note.NoteViewModel as NoteViewModel
 
-class NoteActivity : AppCompatActivity() {
+class NoteActivity: BaseActivity<Note?, NoteViewState>() {
 
     companion object {
         private val EXTRA_NOTE = NoteActivity::class.java.name + "extra.NOTE"
         private val DATE_FORMAT = "dd.MM.yyyy HH:mm"
 
-        fun start(context: Context, note: Note? = null) = Intent(context, NoteActivity::class.java).run {
-            note?.let { putExtra(EXTRA_NOTE, note)}
+        fun start(context: Context, noteId: String? = null) = Intent(context, NoteActivity::class.java).run {
+            noteId?.let { putExtra(EXTRA_NOTE, noteId)}
             context.startActivity(this)
         }
     }
 
     private var note: Note? = null
-    lateinit var viewModel: NoteViewModel
+    override val viewModel: NoteViewModel by lazy {
+        ViewModelProviders.of(this).get(NoteViewModel::class.java)
+    }
+    override val layoutRes: Int = R.layout.activity_note
+
+    override fun renderData(data: Note?) {
+        this.note = data
+        supportActionBar?.title = note?.let { note ->
+            SimpleDateFormat(DATE_FORMAT, Locale.getDefault()).format(note.lastChanged)
+        } ?: let {
+            getString(R.string.new_note_title)
+        }
+        initViews()
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_note)
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
-        note = intent.getParcelableExtra(EXTRA_NOTE)
-        viewModel = ViewModelProviders.of(this).get(NoteViewModel::class.java)
+        val noteId = intent.getStringExtra(EXTRA_NOTE)
+        noteId?.let { id ->
+            viewModel.loadNote(id)
+        } ?: let {
+            supportActionBar?.title = getString(R.string.new_note_title)
+        }
 
         initViews()
     }
 
     private fun initViews() {
-        supportActionBar?.setDisplayHomeAsUpEnabled(true)
-        supportActionBar?.title = note?.let { note ->
-            ""
-        } ?: let {
-            getString(R.string.new_note_title)
-        }
-
         et_title.removeTextChangedListener(textChangeListener)
         et_body.removeTextChangedListener(textChangeListener)
 
@@ -84,6 +97,12 @@ class NoteActivity : AppCompatActivity() {
         override fun afterTextChanged(s: Editable?) {
             saveNote()
         }
+    }
 
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when(item.itemId) {
+            android.R.id.home -> { onBackPressed(); true}
+            else -> return super.onOptionsItemSelected(item)
+        }
     }
 }
