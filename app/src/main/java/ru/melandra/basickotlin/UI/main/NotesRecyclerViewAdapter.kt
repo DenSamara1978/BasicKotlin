@@ -31,7 +31,7 @@ class NotesRecyclerViewAdapter(val onItemClick:((Note) -> Unit)? = null): Recycl
                 with(note) {
                     tv_title.text = title
                     tv_text.text = text
-                    setBackgroundColor(getColor())
+                    setBackgroundColor(getIntColor())
                 }
                 setOnClickListener { onItemClick?.invoke(note) }
             }
