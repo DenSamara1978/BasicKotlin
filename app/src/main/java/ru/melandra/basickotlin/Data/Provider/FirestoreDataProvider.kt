@@ -9,15 +9,12 @@ import ru.melandra.basickotlin.Data.Note
 import ru.melandra.basickotlin.Data.NoteResult
 import ru.melandra.basickotlin.Data.User
 
-class FirestoreDataProvider : RemoteDataProvider {
+class FirestoreDataProvider(val store: FirebaseFirestore, val auth: FirebaseAuth) : RemoteDataProvider {
 
     companion object {
         private const val NOTES_COLLECTION = "notes"
         private const val USER_COLLECTION = "users"
     }
-
-    private val store by lazy { FirebaseFirestore.getInstance() }
-    private val auth by lazy { FirebaseAuth.getInstance() }
 
     private val currentUser
         get() = auth.currentUser
@@ -51,6 +48,15 @@ class FirestoreDataProvider : RemoteDataProvider {
         userNotesCollection.document(note.id).set(note)
                 .addOnSuccessListener { snapshot ->
                     value = NoteResult.Success(note)
+                }.addOnFailureListener {
+                    value = NoteResult.Error(it)
+                }
+    }
+
+    override fun deleteNote(id: String): LiveData<NoteResult> = MutableLiveData<NoteResult>().apply {
+        userNotesCollection.document(id).delete()
+                .addOnSuccessListener {
+                    value = NoteResult.Success(null)
                 }.addOnFailureListener {
                     value = NoteResult.Error(it)
                 }

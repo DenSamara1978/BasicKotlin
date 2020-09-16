@@ -1,15 +1,12 @@
 package ru.melandra.basickotlin.UI.splash
 
-import androidx.lifecycle.ViewModelProviders
+import org.koin.android.viewmodel.ext.android.viewModel
 import ru.melandra.basickotlin.UI.base.BaseActivity
 import ru.melandra.basickotlin.UI.main.MainActivity
 
 class SplashActivity : BaseActivity<Boolean?, SplashViewState>() {
 
-    override val viewModel: SplashViewModel by lazy {
-        ViewModelProviders.of(this).get(SplashViewModel::class.java)
-    }
-
+    override val model: SplashViewModel by viewModel()
     override val layoutRes = null
 
     override fun renderData(data: Boolean?) {
@@ -18,7 +15,7 @@ class SplashActivity : BaseActivity<Boolean?, SplashViewState>() {
 
     override fun onResume() {
         super.onResume()
-        viewModel.requestUser()
+        model.requestUser()
     }
 
     private fun startMainActivity() {
