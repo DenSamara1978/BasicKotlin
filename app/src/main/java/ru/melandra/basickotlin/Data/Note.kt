@@ -19,7 +19,7 @@ data class Note (
         return (id ==(other as Note).id)
     }
 
-    fun getColor() = when(color) {
+    fun getIntColor() = when(color) {
         Color.WHITE -> R.color.white
         Color.RED -> R.color.red
         Color.GREEN -> R.color.green

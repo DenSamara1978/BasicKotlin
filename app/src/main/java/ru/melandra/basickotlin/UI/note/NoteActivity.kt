@@ -2,7 +2,6 @@ package ru.melandra.basickotlin.UI.note
 
 import android.content.Context
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -10,7 +9,6 @@ import android.view.MenuItem
 import androidx.lifecycle.ViewModelProviders
 import kotlinx.android.synthetic.main.activity_note.*
 import ru.melandra.basickotlin.Data.Note
-import ru.melandra.basickotlin.Data.NotesRepository.saveNote
 import ru.melandra.basickotlin.R
 import ru.melandra.basickotlin.UI.base.BaseActivity
 import java.text.SimpleDateFormat
@@ -33,7 +31,7 @@ class NoteActivity: BaseActivity<Note?, NoteViewState>() {
     override val viewModel: NoteViewModel by lazy {
         ViewModelProviders.of(this).get(NoteViewModel::class.java)
     }
-    override val layoutRes: Int = R.layout.activity_note
+    override val layoutRes = R.layout.activity_note
 
     override fun renderData(data: Note?) {
         this.note = data
@@ -67,7 +65,7 @@ class NoteActivity: BaseActivity<Note?, NoteViewState>() {
         note?.let {note ->
             et_title.setText(note.title)
             et_body.setText(note.text)
-            toolbar_note.setBackgroundColor(note.getColor())
+            toolbar_note.setBackgroundColor(note.getIntColor())
         }
 
         et_title.addTextChangedListener(textChangeListener)
