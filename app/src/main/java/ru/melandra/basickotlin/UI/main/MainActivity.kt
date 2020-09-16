@@ -1,34 +1,37 @@
 package ru.melandra.basickotlin.UI.main
 
 import android.os.Bundle
-import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.GridLayoutManager
 import kotlinx.android.synthetic.main.activity_main.*
+import ru.melandra.basickotlin.Data.Note
 import ru.melandra.basickotlin.R
+import ru.melandra.basickotlin.UI.base.BaseActivity
+import ru.melandra.basickotlin.UI.base.BaseViewModel
 import ru.melandra.basickotlin.UI.note.NoteActivity
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : BaseActivity<List<Note>?, MainViewState>() {
 
-    lateinit var viewModel: MainViewModel
-    val adapter: NotesRecyclerViewAdapter = NotesRecyclerViewAdapter {NoteActivity.start(this, it)}
+    override val viewModel: BaseViewModel<List<Note>?, MainViewState> by lazy {
+        ViewModelProviders.of(this).get(MainViewModel::class.java)
+    }
+
+    override val layoutRes = R.layout.activity_main
+
+    lateinit var adapter: NotesRecyclerViewAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        viewModel = ViewModelProviders.of(this).get(MainViewModel::class.java)
-
         rv_notes.layoutManager = GridLayoutManager(this, 2)
+        adapter = NotesRecyclerViewAdapter { note -> NoteActivity.start(this, note.id)}
         rv_notes.adapter = adapter
 
-        viewModel.viewState().observe(this, Observer { state ->
-            state?.let { state ->
-                adapter.notes = state.notes
-            }
-        })
-
         fab.setOnClickListener { NoteActivity.start(this) }
+    }
+
+    override fun renderData(data: List<Note>?) {
+        data?.let { adapter.notes = it }
     }
 }
