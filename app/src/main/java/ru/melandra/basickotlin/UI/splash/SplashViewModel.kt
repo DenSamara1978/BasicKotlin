@@ -4,10 +4,10 @@ import ru.melandra.basickotlin.Data.NoAuthException
 import ru.melandra.basickotlin.Data.NotesRepository
 import ru.melandra.basickotlin.UI.base.BaseViewModel
 
-class SplashViewModel: BaseViewModel<Boolean?, SplashViewState>() {
+class SplashViewModel(val notesRepository: NotesRepository): BaseViewModel<Boolean?, SplashViewState>() {
 
     fun requestUser() {
-        NotesRepository.getCurrentUser().observeForever {
+        notesRepository.getCurrentUser().observeForever {
             viewStateLiveData.value = it?.let {
                 SplashViewState(authenticated = true)
             } ?: let {

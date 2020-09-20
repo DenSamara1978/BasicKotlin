@@ -7,7 +7,7 @@ import ru.melandra.basickotlin.Data.NotesRepository
 import ru.melandra.basickotlin.UI.base.BaseViewModel
 import java.util.*
 
-class MainViewModel: BaseViewModel<List<Note>?, MainViewState>() {
+class MainViewModel(notesRepository: NotesRepository): BaseViewModel<List<Note>?, MainViewState>() {
 
     private val notesObserver = Observer<NoteResult> { result ->
         result ?: return@Observer
@@ -23,7 +23,7 @@ class MainViewModel: BaseViewModel<List<Note>?, MainViewState>() {
         }
     }
 
-    private val repositoryNotes = NotesRepository.getNotes()
+    private val repositoryNotes = notesRepository.getNotes()
 
     init {
         viewStateLiveData.value = MainViewState()

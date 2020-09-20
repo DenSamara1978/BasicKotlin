@@ -1,21 +1,21 @@
 package ru.melandra.basickotlin.UI.note
 
+import android.app.AlertDialog
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.view.Menu
 import android.view.MenuItem
-import androidx.lifecycle.ViewModelProviders
 import kotlinx.android.synthetic.main.activity_note.*
+import org.koin.android.viewmodel.ext.android.viewModel
 import ru.melandra.basickotlin.Data.Note
 import ru.melandra.basickotlin.R
 import ru.melandra.basickotlin.UI.base.BaseActivity
-import java.text.SimpleDateFormat
 import java.util.*
-import ru.melandra.basickotlin.UI.note.NoteViewModel as NoteViewModel
 
-class NoteActivity: BaseActivity<Note?, NoteViewState>() {
+class NoteActivity: BaseActivity<NoteViewState.Data, NoteViewState>() {
 
     companion object {
         private val EXTRA_NOTE = NoteActivity::class.java.name + "extra.NOTE"
@@ -28,20 +28,8 @@ class NoteActivity: BaseActivity<Note?, NoteViewState>() {
     }
 
     private var note: Note? = null
-    override val viewModel: NoteViewModel by lazy {
-        ViewModelProviders.of(this).get(NoteViewModel::class.java)
-    }
+    override val model: NoteViewModel by viewModel()
     override val layoutRes = R.layout.activity_note
-
-    override fun renderData(data: Note?) {
-        this.note = data
-        supportActionBar?.title = note?.let { note ->
-            SimpleDateFormat(DATE_FORMAT, Locale.getDefault()).format(note.lastChanged)
-        } ?: let {
-            getString(R.string.new_note_title)
-        }
-        initViews()
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -49,12 +37,7 @@ class NoteActivity: BaseActivity<Note?, NoteViewState>() {
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
         val noteId = intent.getStringExtra(EXTRA_NOTE)
-        noteId?.let { id ->
-            viewModel.loadNote(id)
-        } ?: let {
-            supportActionBar?.title = getString(R.string.new_note_title)
-        }
-
+        noteId?.let { id -> model.loadNote(id) }
         initViews()
     }
 
@@ -66,6 +49,8 @@ class NoteActivity: BaseActivity<Note?, NoteViewState>() {
             et_title.setText(note.title)
             et_body.setText(note.text)
             toolbar_note.setBackgroundColor(note.getIntColor())
+        } ?: let {
+            supportActionBar?.title = getString(R.string.new_note_title)
         }
 
         et_title.addTextChangedListener(textChangeListener)
@@ -84,7 +69,7 @@ class NoteActivity: BaseActivity<Note?, NoteViewState>() {
                 lastChanged = Date()
         ) ?: Note(UUID.randomUUID().toString(), title, text)
 
-        note?.let { viewModel.save(it) }
+        note?.let { model.save(it) }
     }
 
     val textChangeListener = object: TextWatcher {
@@ -97,10 +82,31 @@ class NoteActivity: BaseActivity<Note?, NoteViewState>() {
         }
     }
 
+    override fun onCreateOptionsMenu(menu: Menu?) =
+        menuInflater.inflate(R.menu.note, menu).let { true }
+
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when(item.itemId) {
-            android.R.id.home -> { onBackPressed(); true}
+            android.R.id.home -> onBackPressed().let { true }
+         //   android.R.id.delete -> deleteNote().let { true }
             else -> return super.onOptionsItemSelected(item)
         }
+    }
+
+    override fun renderData(data: NoteViewState.Data) {
+        if (!data.isDeleted) {
+            this.note = data.note
+            initViews()
+        } else
+            finish()
+
+    }
+
+    fun deleteNote() {
+        AlertDialog.Builder(this)
+                .setMessage(getString(R.string.note_delete_message))
+                .setPositiveButton(R.string.note_delete_ok) { dialog, which -> model.deleteNote() }
+                .setNegativeButton(R.string.note_delete_cancel) { dialog, which -> dialog.dismiss() }
+                .show()
     }
 }
