@@ -1,5 +1,6 @@
 package ru.melandra.basickotlin.UI.main
 
+import androidx.annotation.VisibleForTesting
 import androidx.lifecycle.Observer
 import ru.melandra.basickotlin.Data.Note
 import ru.melandra.basickotlin.Data.NoteResult
@@ -7,7 +8,7 @@ import ru.melandra.basickotlin.Data.NotesRepository
 import ru.melandra.basickotlin.UI.base.BaseViewModel
 import java.util.*
 
-class MainViewModel(notesRepository: NotesRepository): BaseViewModel<List<Note>?, MainViewState>() {
+open class MainViewModel(notesRepository: NotesRepository): BaseViewModel<List<Note>?, MainViewState>() {
 
     private val notesObserver = Observer<NoteResult> { result ->
         result ?: return@Observer
@@ -30,7 +31,8 @@ class MainViewModel(notesRepository: NotesRepository): BaseViewModel<List<Note>?
         repositoryNotes.observeForever(notesObserver)
     }
 
-    override fun onCleared() {
+    @VisibleForTesting
+    public override fun onCleared() {
         repositoryNotes.removeObserver(notesObserver)
         super.onCleared()
     }

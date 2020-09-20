@@ -1,11 +1,12 @@
 package ru.melandra.basickotlin.UI.note
 
+import androidx.annotation.VisibleForTesting
 import ru.melandra.basickotlin.Data.Note
 import ru.melandra.basickotlin.Data.NoteResult
 import ru.melandra.basickotlin.Data.NotesRepository
 import ru.melandra.basickotlin.UI.base.BaseViewModel
 
-class NoteViewModel(val notesRepository: NotesRepository): BaseViewModel<NoteViewState.Data, NoteViewState>() {
+open class NoteViewModel(val notesRepository: NotesRepository): BaseViewModel<NoteViewState.Data, NoteViewState>() {
 
     private var pendingNote: Note? = null;
 
@@ -28,7 +29,8 @@ class NoteViewModel(val notesRepository: NotesRepository): BaseViewModel<NoteVie
         }
     }
 
-    override fun onCleared() {
+    @VisibleForTesting
+    public override fun onCleared() {
         pendingNote?.let {
             notesRepository.saveNote(it)
         }
