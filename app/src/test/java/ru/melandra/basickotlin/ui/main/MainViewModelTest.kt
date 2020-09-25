@@ -1,11 +1,11 @@
 package ru.melandra.basickotlin.ui.main
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
-import androidx.lifecycle.MutableLiveData
 import io.mockk.clearAllMocks
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
+import kotlinx.coroutines.channels.Channel
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Before
@@ -22,13 +22,13 @@ class MainViewModelTest {
     val taskExecutorRule = InstantTaskExecutorRule()
 
     private val mockRepository = mockk<NotesRepository>()
-    private val notesLiveData = MutableLiveData<NoteResult>()
+    private val receiveChannelNoteResult = Channel<NoteResult>()
     private lateinit var viewModel: MainViewModel
 
     @Before
     fun setup() {
         clearAllMocks()
-        every { mockRepository.getNotes() } returns notesLiveData
+        every { mockRepository.getNotes() } returns receiveChannelNoteResult
         viewModel = MainViewModel(mockRepository)
     }
 
@@ -57,11 +57,5 @@ class MainViewModelTest {
         }
         notesLiveData.value = NoteResult.Error(error = testData)
         assertEquals(testData, result)
-    }
-
-    @Test
-    fun `should remove observer`(){
-        viewModel.onCleared()
-        assertFalse(notesLiveData.hasObservers())
     }
 }

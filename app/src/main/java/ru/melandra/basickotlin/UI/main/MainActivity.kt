@@ -18,7 +18,7 @@ import ru.melandra.basickotlin.UI.base.BaseViewModel
 import ru.melandra.basickotlin.UI.note.NoteActivity
 import ru.melandra.basickotlin.UI.splash.SplashActivity
 
-class MainActivity : BaseActivity<List<Note>?, MainViewState>() {
+class MainActivity : BaseActivity<List<Note>?>() {
 
     companion object {
         fun start(context: Context) {

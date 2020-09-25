@@ -4,7 +4,7 @@ import org.koin.android.viewmodel.ext.android.viewModel
 import ru.melandra.basickotlin.UI.base.BaseActivity
 import ru.melandra.basickotlin.UI.main.MainActivity
 
-class SplashActivity : BaseActivity<Boolean?, SplashViewState>() {
+class SplashActivity : BaseActivity<Boolean?>() {
 
     override val model: SplashViewModel by viewModel()
     override val layoutRes = null

@@ -15,7 +15,7 @@ import ru.melandra.basickotlin.R
 import ru.melandra.basickotlin.UI.base.BaseActivity
 import java.util.*
 
-class NoteActivity: BaseActivity<NoteViewState.Data, NoteViewState>() {
+class NoteActivity: BaseActivity<NoteViewState.Data>() {
 
     companion object {
         private val EXTRA_NOTE = NoteActivity::class.java.name + "extra.NOTE"
@@ -88,7 +88,7 @@ class NoteActivity: BaseActivity<NoteViewState.Data, NoteViewState>() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when(item.itemId) {
             android.R.id.home -> onBackPressed().let { true }
-         //   android.R.id.delete -> deleteNote().let { true }
+            R.id.delete_itm -> deleteNote().let { true }
             else -> return super.onOptionsItemSelected(item)
         }
     }
