@@ -5,12 +5,13 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <item
+        android:id="@+id/delete_itm"
         android:title="@string/note_delete"
         tools:ignore="AppCompatResource"
         android:showAsAction="ifRoom"
         app:showAsAction="always"
         android:icon="@drawable/ic_delete"
         android:iconTint="@color/white"
-        android:id="@+id/delete"/>
+        />
 
 </menu>

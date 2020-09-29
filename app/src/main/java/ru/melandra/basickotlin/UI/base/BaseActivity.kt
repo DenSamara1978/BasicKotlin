@@ -7,32 +7,57 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import com.firebase.ui.auth.AuthUI
+import kotlinx.coroutines.*
+import kotlinx.coroutines.channels.consumeEach
 import ru.melandra.basickotlin.Data.NoAuthException
 import ru.melandra.basickotlin.R
+import kotlin.coroutines.CoroutineContext
 
-abstract class BaseActivity<T, S: BaseViewState<T>>: AppCompatActivity() {
+abstract class BaseActivity<S>: AppCompatActivity(), CoroutineScope {
 
     companion object {
         const val RC_SIGN_IN = 4242
     }
-    abstract val model: BaseViewModel<T, S>
+
+    override val coroutineContext: CoroutineContext by lazy {
+        Dispatchers.Main + Job()
+    }
+
+    private lateinit var dataJob: Job
+    private lateinit var errorJob: Job
+
+    abstract val model: BaseViewModel<S>
     abstract val layoutRes: Int?
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         layoutRes?.let { setContentView(it) }
-
-        model.getViewState().observe(this, Observer { state ->
-            state ?: return@Observer
-            state.error?.let { error ->
-                renderError(error)
-                return@Observer
-            }
-            renderData(state.data)
-        })
     }
 
-    abstract fun renderData(data: T)
+    override fun onStart() {
+        super.onStart()
+
+        dataJob = launch {
+            model.getViewState().consumeEach { renderData(it) }
+        }
+
+        errorJob = launch {
+            model.getErrorChannel().consumeEach { renderError(it) }
+        }
+    }
+
+    override fun onStop() {
+        super.onStop()
+        dataJob.cancel()
+        errorJob.cancel()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        coroutineContext.cancel()
+    }
+
+    abstract fun renderData(data: S)
 
     protected fun renderError(error: Throwable?) {
         when(error) {
